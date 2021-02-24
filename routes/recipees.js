@@ -13,7 +13,9 @@ router.get("/", (req, res, next) => {
 })
 
 router.post("/", (req, res, next) => {
-    Recipee.create()
+    const updateValues = { ...req.body };
+    console.log(updateValues)
+    Recipee.create(updateValues)
         .then((recipeeDoc) => {
             res.status(201).json(recipeeDoc);
         })

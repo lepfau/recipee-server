@@ -51,11 +51,6 @@ app.use("/api", indexRouter)
 app.use("/api/recipees", recipeeRouter)
 
 // 404 Middleware
-app.use((req, res, next) => {
-  const error = new Error("Ressource not found.");
-  error.status = 404;
-  next(err);
-});
 
 // Error handler middleware
 // If you pass an argument to your next function in any of your routes or middlewares
