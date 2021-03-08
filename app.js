@@ -25,7 +25,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   session({
-    store: new MongoStore({ mongooseConnection: mongoose.connection }), // Persist session in database.
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    // Persist session in database.
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
@@ -43,12 +44,12 @@ app.use(function (req, res, next) {
  */
 
 const authRouter = require("./routes/auth");
-const indexRouter = require("./routes/index")
-const recipeeRouter = require("./routes/recipees")
+const indexRouter = require("./routes/index");
+const recipesRouter = require("./routes/recipes");
 
 app.use("/api/auth", authRouter);
-app.use("/api", indexRouter)
-app.use("/api/recipees", recipeeRouter)
+app.use("/api", indexRouter);
+app.use("/api/recipes", recipesRouter);
 
 // 404 Middleware
 
