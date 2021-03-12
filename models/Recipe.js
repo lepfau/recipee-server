@@ -3,7 +3,12 @@ const Schema = mongoose.Schema;
 
 const recipeSchema = new Schema({
   name: String,
-  ingredients: String,
+  ingredients: [String],
+  etapes: [String],
+  vegan: Boolean,
+  vegetarian: Boolean,
+  gluten: Boolean,
+  lactose: Boolean,
   image: {
     type: String,
     default:
