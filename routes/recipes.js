@@ -13,6 +13,16 @@ router.get("/", (req, res, next) => {
     });
 });
 
+router.get("/:id", (req, res, next) => {
+  Recipe.findById(req.params.id)
+    .then((RecipeDocument) => {
+      res.status(200).json(RecipeDocument);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
 router.post("/", uploader.single("image"), (req, res, next) => {
   const updateValues = { ...req.body };
   if (req.file) {
