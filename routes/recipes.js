@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Recipe = require("../models/Recipe");
 const uploader = require("../config/cloudinary");
+const requireAuth = require("../middlewares/requireAuth");
 
 router.get("/", (req, res, next) => {
   Recipe.find()
@@ -23,15 +24,25 @@ router.get("/:id", (req, res, next) => {
     });
 });
 
-router.post("/", uploader.single("image"), (req, res, next) => {
+router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
   const updateValues = { ...req.body };
+
   if (req.file) {
     updateValues.image = req.file.path;
   }
-  console.log(updateValues);
+
+  updateValues.id_user = req.session.currentUser; // Retrieve the authors id from the session.
+
   Recipe.create(updateValues)
-    .then((recipeDoc) => {
-      res.status(201).json(recipeDoc);
+    .then((recipeDocument) => {
+      recipeDocument
+        .populate("id_user")
+        .execPopulate() // Populate on .create() does not work, but we can use populate() on the document once its created !
+        .then((recipe) => {
+          console.log("here");
+          res.status(201).json(recipe); // send the populated document.
+        })
+        .catch(next);
     })
     .catch(next);
 });

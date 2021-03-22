@@ -12,7 +12,19 @@ const recipeSchema = new Schema({
   image: {
     type: String,
     default:
-      "https://www.biocoop-cholet.fr/docs/1/Actualites//Quelle-casserole-pour-cuisiner-sain.png",
+      "https://cdn1.iconfinder.com/data/icons/gardening-filled-line/614/1935_-_Growing_Plant-512.png",
+  },
+  type: {
+    type: String,
+    enum: ["snack", "plat", "dessert", "autre"],
+  },
+  temps: {
+    type: Number,
+    min: 0,
+  },
+  id_user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 
