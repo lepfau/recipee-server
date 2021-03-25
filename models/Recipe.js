@@ -28,9 +28,7 @@ const recipeSchema = new Schema({
     ref: "User",
   },
 
-  ratings: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
-  },
+  ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
 });
 
 const Recipe = mongoose.model("Recipee", recipeSchema);

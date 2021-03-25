@@ -7,7 +7,10 @@ const ratingSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  id_recipe: String,
+  id_recipe: {
+    type: Schema.Types.ObjectId,
+    ref: "Rating",
+  },
 });
 
 const Rating = mongoose.model("Rating", ratingSchema);

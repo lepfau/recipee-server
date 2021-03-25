@@ -4,6 +4,17 @@ const Recipe = require("../models/Recipe");
 const uploader = require("../config/cloudinary");
 const requireAuth = require("../middlewares/requireAuth");
 
+router.get("/", (req, res, next) => {
+  Recipe.find()
+    .populate("id_user")
+    .then((recipeDoc) => {
+      res.status(200).json(recipeDoc);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
 router.patch(
   "/:id",
   requireAuth,
@@ -32,22 +43,10 @@ router.patch(
   }
 );
 
-router.get("/", (req, res, next) => {
-  Recipe.find()
-    .populate("id_user")
-    .populate("ratings")
-    .then((recipeDoc) => {
-      res.status(200).json(recipeDoc);
-    })
-    .catch((error) => {
-      next(error);
-    });
-});
-
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
     .populate("id_user")
-    .populate("ratings")
+
     .then((RecipeDocument) => {
       res.status(200).json(RecipeDocument);
     })

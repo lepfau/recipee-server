@@ -20,9 +20,10 @@ router.post("/", requireAuth, (req, res, next) => {
 
   Ratings.create(updateValues)
     .then((recipeDocument) => {
+      console.log(recipeDocument);
       recipeDocument
         .populate("id_user")
-        .populate("id_recipe")
+        .populate("id_recipe.note")
         .execPopulate() // Populate on .create() does not work, but we can use populate() on the document once its created !
         .then((recipe) => {
           console.log("here");
