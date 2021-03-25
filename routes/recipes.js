@@ -6,6 +6,7 @@ const requireAuth = require("../middlewares/requireAuth");
 
 router.get("/", (req, res, next) => {
   Recipe.find()
+    .populate("id_user")
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -16,6 +17,7 @@ router.get("/", (req, res, next) => {
 
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
+    .populate("id_user")
     .then((RecipeDocument) => {
       res.status(200).json(RecipeDocument);
     })
