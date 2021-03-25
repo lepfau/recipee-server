@@ -4,9 +4,38 @@ const Recipe = require("../models/Recipe");
 const uploader = require("../config/cloudinary");
 const requireAuth = require("../middlewares/requireAuth");
 
+router.patch(
+  "/:id",
+  requireAuth,
+  uploader.single("image"),
+  (req, res, next) => {
+    const item = { ...req.body };
+    console.log(item);
+    Recipe.findById(req.params.id)
+      .then((itemDocument) => {
+        if (!itemDocument)
+          return res.status(404).json({ message: "Item not found" });
+
+        if (req.file) {
+          item.image = req.file.path;
+        }
+
+        Recipe.findByIdAndUpdate(req.params.id, item, { new: true })
+          .populate("id_user")
+          .populate("ratings")
+          .then((updatedDocument) => {
+            return res.status(200).json(updatedDocument);
+          })
+          .catch(next);
+      })
+      .catch(next);
+  }
+);
+
 router.get("/", (req, res, next) => {
   Recipe.find()
     .populate("id_user")
+    .populate("ratings")
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -18,6 +47,7 @@ router.get("/", (req, res, next) => {
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
     .populate("id_user")
+    .populate("ratings")
     .then((RecipeDocument) => {
       res.status(200).json(RecipeDocument);
     })
@@ -39,6 +69,7 @@ router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
     .then((recipeDocument) => {
       recipeDocument
         .populate("id_user")
+        .populate("ratings")
         .execPopulate() // Populate on .create() does not work, but we can use populate() on the document once its created !
         .then((recipe) => {
           console.log("here");

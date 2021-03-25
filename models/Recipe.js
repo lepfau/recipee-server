@@ -22,9 +22,14 @@ const recipeSchema = new Schema({
     type: Number,
     min: 0,
   },
+
   id_user: {
     type: Schema.Types.ObjectId,
     ref: "User",
+  },
+
+  ratings: {
+    type: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
   },
 });
 

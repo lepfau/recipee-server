@@ -46,9 +46,11 @@ app.use(function (req, res, next) {
 const authRouter = require("./routes/auth");
 const indexRouter = require("./routes/index");
 const recipesRouter = require("./routes/recipes");
+const ratingsRouter = require("./routes/ratings");
 
 app.use("/api/auth", authRouter);
 app.use("/api", indexRouter);
+app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 
 // 404 Middleware
