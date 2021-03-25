@@ -15,6 +15,45 @@ router.get("/", (req, res, next) => {
     });
 });
 
+router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
+  const updateValues = { ...req.body };
+
+  if (req.file) {
+    updateValues.image = req.file.path;
+  }
+
+  updateValues.id_user = req.session.currentUser; // Retrieve the authors id from the session.
+
+  Recipe.create(updateValues)
+    .then((recipeDocument) => {
+      recipeDocument
+        .populate("id_user")
+        .populate("ratings")
+        .execPopulate() // Populate on .create() does not work, but we can use populate() on the document once its created !
+        .then((recipe) => {
+          console.log("here");
+          res.status(201).json(recipe); // send the populated document.
+        })
+        .catch(next);
+    })
+    .catch(next);
+});
+
+router.delete("/:id", (req, res, next) => {
+  Recipe.findByIdAndDelete(req.params.id)
+    //   Item.findOne({
+    //     $and: [{ id_user: req.session.currentUser }, { _id: req.params.id }],
+    //   })
+    .then((recipeDoc) => {
+      res.status(204).json({
+        message: "Successfuly deleted",
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
 router.patch(
   "/:id",
   requireAuth,
@@ -53,30 +92,6 @@ router.get("/:id", (req, res, next) => {
     .catch((error) => {
       next(error);
     });
-});
-
-router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
-  const updateValues = { ...req.body };
-
-  if (req.file) {
-    updateValues.image = req.file.path;
-  }
-
-  updateValues.id_user = req.session.currentUser; // Retrieve the authors id from the session.
-
-  Recipe.create(updateValues)
-    .then((recipeDocument) => {
-      recipeDocument
-        .populate("id_user")
-        .populate("ratings")
-        .execPopulate() // Populate on .create() does not work, but we can use populate() on the document once its created !
-        .then((recipe) => {
-          console.log("here");
-          res.status(201).json(recipe); // send the populated document.
-        })
-        .catch(next);
-    })
-    .catch(next);
 });
 
 module.exports = router;
