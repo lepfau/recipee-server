@@ -3,10 +3,12 @@ const router = express.Router();
 const Recipe = require("../models/Recipe");
 const uploader = require("../config/cloudinary");
 const requireAuth = require("../middlewares/requireAuth");
+const User = require("../models/User");
 
 router.get("/", (req, res, next) => {
   Recipe.find()
     .populate("id_user")
+    .populate("ratings")
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -25,6 +27,11 @@ router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
   updateValues.id_user = req.session.currentUser; // Retrieve the authors id from the session.
 
   Recipe.create(updateValues)
+    .then((recipeDocument) => {
+      return User.findByIdAndUpdate(updateValues.id_user, {
+        $push: { recipes: recipeDocument._id },
+      });
+    })
     .then((recipeDocument) => {
       recipeDocument
         .populate("id_user")
@@ -85,7 +92,6 @@ router.patch(
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
     .populate("id_user")
-
     .then((RecipeDocument) => {
       res.status(200).json(RecipeDocument);
     })

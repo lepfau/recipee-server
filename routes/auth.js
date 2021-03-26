@@ -5,6 +5,17 @@ const User = require("../models/User");
 
 const salt = 10;
 
+router.get("/", (req, res, next) => {
+  User.find()
+    .populate("id_recipe")
+    .then((recipeDoc) => {
+      res.status(200).json(recipeDoc);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
 router.post("/signin", (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
@@ -13,11 +24,14 @@ router.post("/signin", (req, res, next) => {
         return res.status(400).json({ message: "Invalid credentials" });
       }
 
-      const isValidPassword = bcrypt.compareSync(password, userDocument.password);
+      const isValidPassword = bcrypt.compareSync(
+        password,
+        userDocument.password
+      );
       if (!isValidPassword) {
         return res.status(400).json({ message: "Invalid credentials" });
       }
-      
+
       req.session.currentUser = userDocument._id;
       res.redirect("/api/auth/isLoggedIn");
     })
@@ -52,7 +66,7 @@ router.get("/isLoggedIn", (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
 
   const id = req.session.currentUser;
-  
+
   User.findById(id)
     .select("-password")
     .then((userDocument) => {
