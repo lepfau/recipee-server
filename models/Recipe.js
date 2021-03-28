@@ -31,6 +31,6 @@ const recipeSchema = new Schema({
   ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
 });
 
-const Recipe = mongoose.model("Recipee", recipeSchema);
+const Recipe = mongoose.model("Recipe", recipeSchema);
 
 module.exports = Recipe;

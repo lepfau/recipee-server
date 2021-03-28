@@ -29,7 +29,7 @@ router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
   Recipe.create(updateValues)
     .then((recipeDocument) => {
       return User.findByIdAndUpdate(updateValues.id_user, {
-        $push: { recipes: recipeDocument._id },
+        $push: { id_recipes: recipeDocument },
       });
     })
     .then((recipeDocument) => {
