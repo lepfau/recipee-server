@@ -8,7 +8,7 @@ const Rating = require("../models/Rating");
 
 router.get("/", (req, res, next) => {
   Recipe.find()
-    .populate("id_user")
+    .populate("id_user ratings")
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -94,8 +94,8 @@ router.post("/:id/rating", (req, res, next) => {
 
   Rating.findOne(
     { id_user: req.session.currentUser, id_recipe: req.params.id },
-    function (err, user) {
-      if (user === null) {
+    function (err, rate) {
+      if (rate === null) {
         Rating.create(updateValues)
           .then((ratingdoc) => {
             return Recipe.findByIdAndUpdate(updateValues.id_recipe, {
@@ -104,7 +104,9 @@ router.post("/:id/rating", (req, res, next) => {
           })
           .catch(next);
       } else {
-        console.log("already voted");
+        Rating.findByIdAndUpdate(rate._id, { note: updateValues.note }).catch(
+          next
+        );
       }
     }
   );
