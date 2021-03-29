@@ -4,11 +4,11 @@ const Recipe = require("../models/Recipe");
 const uploader = require("../config/cloudinary");
 const requireAuth = require("../middlewares/requireAuth");
 const User = require("../models/User");
+const Rating = require("../models/Rating");
 
 router.get("/", (req, res, next) => {
   Recipe.find()
     .populate("id_user")
-    .populate("ratings")
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -35,7 +35,6 @@ router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
     .then((recipeDocument) => {
       recipeDocument
         .populate("id_user")
-        .populate("ratings")
         .execPopulate() // Populate on .create() does not work, but we can use populate() on the document once its created !
         .then((recipe) => {
           console.log("here");
@@ -79,7 +78,6 @@ router.patch(
 
         Recipe.findByIdAndUpdate(req.params.id, item, { new: true })
           .populate("id_user")
-          .populate("ratings")
           .then((updatedDocument) => {
             return res.status(200).json(updatedDocument);
           })
@@ -89,9 +87,52 @@ router.patch(
   }
 );
 
+router.post("/:id/rating", (req, res, next) => {
+  const updateValues = { ...req.body };
+  updateValues.id_user = req.session.currentUser;
+  updateValues.id_recipe = req.params.id;
+
+  Rating.findOne(
+    { id_user: req.session.currentUser, id_recipe: req.params.id },
+    function (err, user) {
+      if (user === null) {
+        Rating.create(updateValues)
+          .then((ratingdoc) => {
+            return Recipe.findByIdAndUpdate(updateValues.id_recipe, {
+              $push: { ratings: ratingdoc },
+            });
+          })
+          .catch(next);
+      } else {
+        console.log("already voted");
+      }
+    }
+  );
+});
+
+// router.get("/:id", (req, res, next) => {
+//   Recipe.findById(req.params.id)
+//     .populate("id_user ratings")
+//     .populate({
+//       // we are populating author in the previously populated comments
+//       path: "ratings",
+//       populate: {
+//         path: "id_user",
+//         model: "User",
+//       },
+//     })
+//     .then((RecipeDocument) => {
+//       res.status(200).json(RecipeDocument);
+//     })
+//     .catch((error) => {
+//       next(error);
+//     });
+// });
+
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
-    .populate("id_user")
+    .populate("id_user ratings")
+
     .then((RecipeDocument) => {
       res.status(200).json(RecipeDocument);
     })
