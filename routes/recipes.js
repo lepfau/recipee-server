@@ -106,9 +106,10 @@ router.post("/:id/rating", (req, res, next) => {
       } else if (!req.session.currentUser) {
         return res.status(400).json({ message: "You need to be logged in" });
       } else {
-        Rating.findByIdAndUpdate(rate._id, { note: updateValues.note }).catch(
-          next
-        );
+        Rating.findByIdAndUpdate(rate._id, {
+          note: updateValues.note,
+          comment: updateValues.comment,
+        }).catch(next);
       }
     }
   );
