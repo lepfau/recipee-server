@@ -95,7 +95,7 @@ router.post("/:id/rating", (req, res, next) => {
   Rating.findOne(
     { id_user: req.session.currentUser, id_recipe: req.params.id },
     function (err, rate) {
-      if (rate === null) {
+      if (rate === null && req.session.currentUser) {
         Rating.create(updateValues)
           .then((ratingdoc) => {
             return Recipe.findByIdAndUpdate(updateValues.id_recipe, {
@@ -103,6 +103,8 @@ router.post("/:id/rating", (req, res, next) => {
             });
           })
           .catch(next);
+      } else if (!req.session.currentUser) {
+        return res.status(400).json({ message: "You need to be logged in" });
       } else {
         Rating.findByIdAndUpdate(rate._id, { note: updateValues.note }).catch(
           next
@@ -134,7 +136,14 @@ router.post("/:id/rating", (req, res, next) => {
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
     .populate("id_user ratings")
-
+    .populate({
+      //       // we are populating author in the previously populated comments
+      path: "ratings",
+      populate: {
+        path: "id_user",
+        model: "User",
+      },
+    })
     .then((RecipeDocument) => {
       res.status(200).json(RecipeDocument);
     })

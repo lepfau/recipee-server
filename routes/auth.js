@@ -9,7 +9,7 @@ const salt = 10;
 router.get("/", (req, res, next) => {
   User.find()
     .populate("id_recipes")
-    .populate("ratings")
+
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -23,10 +23,6 @@ router.get("/profile", (req, res, next) => {
     .populate({
       path: "id_recipes",
       model: "Recipe",
-    })
-    .populate({
-      path: "ratings",
-      model: "Rating",
     })
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
