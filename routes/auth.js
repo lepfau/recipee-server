@@ -8,8 +8,12 @@ const salt = 10;
 
 router.get("/", (req, res, next) => {
   User.find()
-    .populate("id_recipes")
-
+    .populate({
+      path: "id_recipes",
+      populate: {
+        path: "ratings",
+      },
+    })
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -22,7 +26,9 @@ router.get("/profile", (req, res, next) => {
   User.findById(req.session.currentUser)
     .populate({
       path: "id_recipes",
-      model: "Recipe",
+      populate: {
+        path: "ratings",
+      },
     })
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
@@ -55,7 +61,7 @@ router.post("/signin", (req, res, next) => {
 });
 
 router.post("/signup", (req, res, next) => {
-  const { email, password, firstName, lastName } = req.body;
+  const { email, password, firstName, lastName, userName } = req.body;
 
   User.findOne({ email })
     .then((userDocument) => {
@@ -64,7 +70,13 @@ router.post("/signup", (req, res, next) => {
       }
 
       const hashedPassword = bcrypt.hashSync(password, salt);
-      const newUser = { email, lastName, firstName, password: hashedPassword };
+      const newUser = {
+        email,
+        lastName,
+        firstName,
+        userName,
+        password: hashedPassword,
+      };
 
       User.create(newUser)
         .then((newUserDocument) => {

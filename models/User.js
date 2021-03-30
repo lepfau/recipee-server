@@ -4,6 +4,9 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
+  firstName: String,
+  lastName: String,
+  userName: { type: String, required: true },
   id_recipes: [
     {
       type: Schema.Types.ObjectId,
