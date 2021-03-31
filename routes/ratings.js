@@ -16,6 +16,18 @@ router.get("/", (req, res, next) => {
     });
 });
 
+router.delete("/:id", (req, res, next) => {
+  Ratings.findByIdAndDelete(req.params.id)
+    .then((recipeDoc) => {
+      res.status(204).json({
+        message: "Successfuly deleted",
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
 router.post("/", requireAuth, (req, res, next) => {
   const updateValues = { ...req.body };
 
