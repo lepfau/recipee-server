@@ -28,26 +28,4 @@ router.delete("/:id", (req, res, next) => {
     });
 });
 
-router.post("/", requireAuth, (req, res, next) => {
-  const updateValues = { ...req.body };
-
-  updateValues.id_user = req.session.currentUser; // Retrieve the authors id from the session.
-  console.log(updateValues);
-  Ratings.create(updateValues)
-    .then((recipeDocument) => {
-      console.log(recipeDocument);
-      recipeDocument
-        .populate("id_user")
-        .populate("id_recipe")
-        .execPopulate()
-        // Populate on .create() does not work, but we can use populate() on the document once its created !
-        .then((recipe) => {
-          console.log("here");
-          res.status(201).json(recipe); // send the populated document.
-        })
-        .catch(next);
-    })
-    .catch(next);
-});
-
 module.exports = router;

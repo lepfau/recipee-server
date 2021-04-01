@@ -17,6 +17,50 @@ router.get("/", (req, res, next) => {
     });
 });
 
+router.get("/plats", (req, res, next) => {
+  Recipe.find({ type: "plat" })
+    .populate("id_user ratings")
+    .then((recipeDoc) => {
+      res.status(200).json(recipeDoc);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
+router.get("/desserts", (req, res, next) => {
+  Recipe.find({ type: "dessert" })
+    .populate("id_user ratings")
+    .then((recipeDoc) => {
+      res.status(200).json(recipeDoc);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
+router.get("/entrees", (req, res, next) => {
+  Recipe.find({ type: "entrée" })
+    .populate("id_user ratings")
+    .then((recipeDoc) => {
+      res.status(200).json(recipeDoc);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
+router.get("/snacks", (req, res, next) => {
+  Recipe.find({ type: "snack" })
+    .populate("id_user ratings")
+    .then((recipeDoc) => {
+      res.status(200).json(recipeDoc);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
 router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
   const updateValues = { ...req.body };
 
