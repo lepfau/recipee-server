@@ -57,20 +57,14 @@ router.patch("/:id", requireAuth, (req, res, next) => {
     userName,
     password: hashedPassword,
   };
-  User.findOne({ email })
-    .then((userDoc) => {
-      if (userDoc)
-        return res.status(400).json({ message: "email already taken" });
-      User.findByIdAndUpdate(req.params.id, updatedUser, {
-        new: true,
-      })
-        .populate("recipes")
-        .then((updatedUser) => {
-          return res.status(200).json(updatedUser);
-        })
-
-        .catch(next);
+  User.findByIdAndUpdate(req.params.id, updatedUser, {
+    new: true,
+  })
+    .populate("recipes")
+    .then((updatedUser) => {
+      return res.status(200).json(updatedUser);
     })
+
     .catch(next);
 });
 
