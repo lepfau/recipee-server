@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const requireAuth = require("../middlewares/requireAuth");
+const salt = 10;
+const bcrypt = require("bcrypt");
 
 router.get("/", (req, res, next) => {
   User.find()
@@ -45,18 +47,28 @@ router.get("/:username", (req, res, next) => {
     });
 });
 
-router.patch("/:username", requireAuth, (req, res, next) => {
-  const updateValues = { ...req.body };
-  User.findOne({ userName: req.params.username })
+router.patch("/:id", requireAuth, (req, res, next) => {
+  const { email, password, firstName, lastName, userName } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  const updatedUser = {
+    email,
+    lastName,
+    firstName,
+    userName,
+    password: hashedPassword,
+  };
+  User.findOne({ email })
     .then((userDoc) => {
-      if (!userDoc) return res.status(404).json({ message: "user not found" });
-      User.findOneAndUpdate({ userName: req.params.username }, updateValues, {
+      if (userDoc)
+        return res.status(400).json({ message: "email already taken" });
+      User.findByIdAndUpdate(req.params.id, updatedUser, {
         new: true,
       })
         .populate("recipes")
         .then((updatedUser) => {
           return res.status(200).json(updatedUser);
         })
+
         .catch(next);
     })
     .catch(next);
