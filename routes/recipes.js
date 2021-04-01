@@ -90,10 +90,16 @@ router.post("/", requireAuth, uploader.single("image"), (req, res, next) => {
 });
 
 router.delete("/:id", (req, res, next) => {
+  const updateValues = { ...req.body };
   Recipe.findByIdAndDelete(req.params.id)
-    //   Item.findOne({
-    //     $and: [{ id_user: req.session.currentUser }, { _id: req.params.id }],
-    //   })
+    .then((recipeDoc) => {
+      return User.findByIdAndUpdate(recipeDoc.id_user, {
+        $pull: { id_recipes: recipeDoc._id },
+      });
+    })
+    .then(() => {
+      Rating.deleteMany({ note: 2 });
+    })
     .then((recipeDoc) => {
       res.status(204).json({
         message: "Successfuly deleted",
@@ -146,6 +152,10 @@ router.post("/:id/rating", (req, res, next) => {
               $push: { ratings: ratingdoc },
             });
           })
+          .then((rating) => {
+            console.log("here");
+            res.status(201).json(rating);
+          })
           .catch(next);
       } else if (!req.session.currentUser) {
         return res.status(400).json({ message: "You need to be logged in" });
@@ -157,6 +167,15 @@ router.post("/:id/rating", (req, res, next) => {
       }
     }
   );
+});
+
+router.delete("/:id/rating", (req, res, next) => {
+  const updateValues = { ...req.body };
+  updateValues.id_user = req.session.currentUser;
+  updateValues.id_recipe = req.params.id;
+  Rating.deleteMany({ id_recipe: req.params.id }).then((resp) => {
+    console.log("all comments deleted as well");
+  });
 });
 
 // router.get("/:id", (req, res, next) => {
