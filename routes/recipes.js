@@ -178,28 +178,17 @@ router.delete("/:id/rating", (req, res, next) => {
   });
 });
 
-// router.get("/:id", (req, res, next) => {
-//   Recipe.findById(req.params.id)
-//     .populate("id_user ratings")
-//     .populate({
-//       // we are populating author in the previously populated comments
-//       path: "ratings",
-//       populate: {
-//         path: "id_user",
-//         model: "User",
-//       },
-//     })
-//     .then((RecipeDocument) => {
-//       res.status(200).json(RecipeDocument);
-//     })
-//     .catch((error) => {
-//       next(error);
-//     });
-// });
-
 router.get("/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
     .populate("id_user ratings")
+    .populate({
+      //       // we are populating author in the previously populated comments
+      path: "id_user",
+      populate: {
+        path: "id_recipes",
+        model: "Recipe",
+      },
+    })
     .populate({
       //       // we are populating author in the previously populated comments
       path: "ratings",

@@ -2,41 +2,8 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const Recipe = require("../models/Recipe");
 
 const salt = 10;
-
-router.get("/", (req, res, next) => {
-  User.find()
-    .populate({
-      path: "id_recipes",
-      populate: {
-        path: "ratings",
-      },
-    })
-    .then((recipeDoc) => {
-      res.status(200).json(recipeDoc);
-    })
-    .catch((error) => {
-      next(error);
-    });
-});
-
-router.get("/profile", (req, res, next) => {
-  User.findById(req.session.currentUser)
-    .populate({
-      path: "id_recipes",
-      populate: {
-        path: "ratings",
-      },
-    })
-    .then((recipeDoc) => {
-      res.status(200).json(recipeDoc);
-    })
-    .catch((error) => {
-      next(error);
-    });
-});
 
 router.post("/signin", (req, res, next) => {
   const { email, password } = req.body;

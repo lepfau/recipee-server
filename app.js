@@ -51,8 +51,10 @@ const authRouter = require("./routes/auth");
 const indexRouter = require("./routes/index");
 const recipesRouter = require("./routes/recipes");
 const ratingsRouter = require("./routes/ratings");
+const usersRouter = require("./routes/users");
 
 app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 app.use("/api", indexRouter);
 app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
