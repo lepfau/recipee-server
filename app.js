@@ -71,6 +71,7 @@ app.use((req, res, next) => {
 // If you pass an argument to your next function in any of your routes or middlewares
 // You will end up in this middleware
 // next("toto") makes you end up here
+
 app.use((err, req, res, next) => {
   if (process.env.NODE_ENV !== "production") {
     console.error(err);
