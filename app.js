@@ -59,6 +59,12 @@ app.use("/api", indexRouter);
 app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 
+if (process.env.NODE_ENV === "production") {
+  app.use("*", (req, res, next) => {
+    // If no routes match, send them the React HTML.
+    res.sendFile(__dirname + "/public/index.html");
+  });
+}
 // 404 Middleware
 
 // Error handler middleware

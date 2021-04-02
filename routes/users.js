@@ -57,6 +57,7 @@ router.patch("/:id", requireAuth, (req, res, next) => {
     userName,
     password: hashedPassword,
   };
+
   User.findByIdAndUpdate(req.params.id, updatedUser, {
     new: true,
   })
