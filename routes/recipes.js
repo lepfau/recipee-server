@@ -95,6 +95,7 @@ router.delete("/:id", (req, res, next) => {
     .then((recipeDoc) => {
       return User.findByIdAndUpdate(recipeDoc.id_user, {
         $pull: { id_recipes: recipeDoc._id },
+        $pull: { favorites: recipeDoc._id },
       });
     })
     .then(() => {
@@ -167,6 +168,30 @@ router.post("/:id/rating", (req, res, next) => {
       }
     }
   );
+});
+
+router.post("/:id/favorite", (req, res, next) => {
+  Recipe.findById(req.params.id)
+    .then((recipeDoc) => {
+      return User.findByIdAndUpdate(req.session.currentUser, {
+        $addToSet: { favorites: recipeDoc },
+      })
+        .then((resp) => {
+          res.status(201).json(resp);
+        })
+        .catch(next);
+    })
+    .catch(next);
+});
+
+router.patch("/:id/favorite", (req, res, next) => {
+  Recipe.findById(req.params.id).then((recipeDoc) => {
+    return User.findByIdAndUpdate(req.session.currentUser, {
+      $pull: { favorites: recipeDoc._id },
+    }).then((fav) => {
+      res.status(201).json({ message: "removed" });
+    });
+  });
 });
 
 router.delete("/:id/rating", (req, res, next) => {

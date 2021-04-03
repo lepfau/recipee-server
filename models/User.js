@@ -14,6 +14,7 @@ const userSchema = new Schema({
     },
   ],
   ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
+  favorites: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
 });
 
 const User = mongoose.model("User", userSchema);

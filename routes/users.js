@@ -29,6 +29,7 @@ router.get("/profile", (req, res, next) => {
         path: "ratings",
       },
     })
+    .populate("favorites")
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
