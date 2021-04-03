@@ -29,7 +29,12 @@ router.get("/profile", (req, res, next) => {
         path: "ratings",
       },
     })
-    .populate("favorites")
+    .populate({
+      path: "favorites",
+      populate: {
+        path: "ratings",
+      },
+    })
     .then((recipeDoc) => {
       res.status(200).json(recipeDoc);
     })
@@ -48,25 +53,35 @@ router.get("/:username", (req, res, next) => {
     });
 });
 
+// router.patch("/:id", requireAuth, (req, res, next) => {
+//   const { email, password, firstName, lastName, userName } = req.body;
+//   const updatedUser = {
+//     email,
+//     lastName,
+//     firstName,
+//     userName,
+//     password,
+//   };
+
+//   User.findByIdAndUpdate(req.params.id, updatedUser, {
+//     new: true,
+//   })
+//     .populate("recipes")
+//     .then((updatedUser) => {
+//       return res.status(200).json(updatedUser);
+//     })
+
+//     .catch(next);
+// });
+
 router.patch("/:id", requireAuth, (req, res, next) => {
-  const { email, password, firstName, lastName, userName } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, salt);
-  const updatedUser = {
-    email,
-    lastName,
-    firstName,
-    userName,
-    password: hashedPassword,
-  };
+  const userId = req.session.currentUser;
 
-  User.findByIdAndUpdate(req.params.id, updatedUser, {
-    new: true,
-  })
-    .populate("recipes")
-    .then((updatedUser) => {
-      return res.status(200).json(updatedUser);
+  User.findByIdAndUpdate(userId, req.body, { new: true })
+    .select("-password") // Remove the password field from the found document.
+    .then((userDocument) => {
+      res.status(200).json(userDocument);
     })
-
     .catch(next);
 });
 
