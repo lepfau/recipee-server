@@ -159,7 +159,7 @@ router.post("/:id/rating", (req, res, next) => {
           })
           .catch(next);
       } else if (!req.session.currentUser) {
-        return res.status(400).json({ message: "You need to be logged in" });
+        return res.status(400).json({ message: "Vous devez être identifié" });
       } else {
         Rating.findByIdAndUpdate(rate._id, {
           note: updateValues.note,
