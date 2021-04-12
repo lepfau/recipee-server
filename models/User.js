@@ -15,6 +15,7 @@ const userSchema = new Schema({
   ],
   ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
   favorites: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
+  liste: [String],
 });
 
 const User = mongoose.model("User", userSchema);

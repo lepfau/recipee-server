@@ -4,6 +4,7 @@ const User = require("../models/User");
 const requireAuth = require("../middlewares/requireAuth");
 const salt = 10;
 const bcrypt = require("bcrypt");
+const stringifyObject = require("stringify-object");
 
 router.get("/", (req, res, next) => {
   User.find()
@@ -81,6 +82,36 @@ router.patch("/:id", requireAuth, (req, res, next) => {
     .select("-password") // Remove the password field from the found document.
     .then((userDocument) => {
       res.status(200).json(userDocument);
+    })
+    .catch(next);
+});
+
+router.delete("/:id/liste", (req, res, next) => {
+  User.findByIdAndUpdate(req.session.currentUser, {
+    $unset: { liste: "" },
+  })
+    .then((userDoc) => {
+      res.status(201).json(userDoc);
+    })
+    .catch(next);
+});
+
+router.delete("/:id/liste/:ingredient", (req, res, next) => {
+  User.findByIdAndUpdate(req.session.currentUser, {
+    $pull: { liste: req.params.ingredient },
+  })
+    .then((userDoc) => {
+      res.status(201).json(userDoc);
+    })
+    .catch(next);
+});
+
+router.patch("/:id/liste", (req, res, next) => {
+  User.findByIdAndUpdate(req.session.currentUser, {
+    $push: { liste: Object.keys(req.body) },
+  })
+    .then((userDoc) => {
+      res.status(201).json(userDoc);
     })
     .catch(next);
 });
